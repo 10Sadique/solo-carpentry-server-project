@@ -24,34 +24,45 @@ const client = new MongoClient(uri, {
 });
 
 async function run() {
-    const database = client.db('soloCarpentry');
-    const serviceCollection = database.collection('services');
+    try {
+        const database = client.db('soloCarpentry');
+        const serviceCollection = database.collection('services');
 
-    // get services
-    app.get('/services', async (req, res) => {
-        let query = {};
-        let size = Infinity;
+        // get services
+        app.get('/services', async (req, res) => {
+            let query = {};
+            let size = Infinity;
 
-        if (req.query.limit) {
-            size = +req.query.limit;
-        }
-        const cursor = serviceCollection.find(query);
-        const services = await cursor.limit(size).toArray();
+            if (req.query.limit) {
+                size = +req.query.limit;
+            }
+            const cursor = serviceCollection.find(query);
+            const services = await cursor.limit(size).toArray();
 
-        res.send(services);
-    });
+            res.send(services);
+        });
 
-    // get service by id
-    app.get('/services/:id', async (req, res) => {
-        const id = req.params.id;
-        const query = {
-            _id: ObjectId(id),
-        };
+        // get service by id
+        app.get('/services/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {
+                _id: ObjectId(id),
+            };
 
-        const result = await serviceCollection.findOne(query);
+            const result = await serviceCollection.findOne(query);
 
-        res.send(result);
-    });
+            res.send(result);
+        });
+
+        // add service
+        app.post('/services/add', async (req, res) => {
+            const service = req.body;
+            const result = await serviceCollection.insertOne(service);
+
+            res.send(result);
+        });
+    } finally {
+    }
 }
 
 run().catch((err) => console.log(err));
