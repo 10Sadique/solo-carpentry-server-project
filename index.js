@@ -2,7 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // port
 const port = process.env.PORT;
@@ -27,7 +27,7 @@ async function run() {
     const database = client.db('soloCarpentry');
     const serviceCollection = database.collection('services');
 
-    // services
+    // get services
     app.get('/services', async (req, res) => {
         let query = {};
         let size = Infinity;
@@ -39,6 +39,18 @@ async function run() {
         const services = await cursor.limit(size).toArray();
 
         res.send(services);
+    });
+
+    // get service by id
+    app.get('/services/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = {
+            _id: ObjectId(id),
+        };
+
+        const result = await serviceCollection.findOne(query);
+
+        res.send(result);
     });
 }
 
