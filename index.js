@@ -27,17 +27,21 @@ async function run() {
     try {
         const database = client.db('soloCarpentry');
         const serviceCollection = database.collection('services');
+        const reviewCollection = database.collection('reviews');
 
+        // services
         // get services
         app.get('/services', async (req, res) => {
-            let query = {};
+            const query = {};
+            let sortBy = { $natural: 1 };
             let size = Infinity;
 
             if (req.query.limit) {
                 size = +req.query.limit;
+                sortBy = { $natural: -1 };
             }
             const cursor = serviceCollection.find(query);
-            const services = await cursor.limit(size).toArray();
+            const services = await cursor.sort(sortBy).limit(size).toArray();
 
             res.send(services);
         });
@@ -61,6 +65,8 @@ async function run() {
 
             res.send(result);
         });
+
+        // reviews
     } finally {
     }
 }
