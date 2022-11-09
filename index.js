@@ -2,7 +2,12 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const {
+    MongoClient,
+    ServerApiVersion,
+    ObjectId,
+    Timestamp,
+} = require('mongodb');
 
 // port
 const port = process.env.PORT;
@@ -67,6 +72,15 @@ async function run() {
         });
 
         // reviews
+        // add reviews
+        app.post('/reviews/add', async (req, res) => {
+            const review = req.body;
+            review.createdAt = new Date();
+
+            const result = await reviewCollection.insertOne(review);
+
+            res.send(result);
+        });
     } finally {
     }
 }
