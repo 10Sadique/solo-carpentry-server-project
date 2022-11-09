@@ -96,6 +96,27 @@ async function run() {
             res.send(review);
         });
 
+        // update review by id
+        app.patch('/review/:id', async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            const query = {
+                _id: ObjectId(id),
+            };
+            const options = { upsert: false };
+            const updatedDoc = {
+                $set: data,
+            };
+
+            const result = await reviewCollection.updateOne(
+                query,
+                updatedDoc,
+                options
+            );
+
+            res.send(result);
+        });
+
         // get reviews by Id
         app.get('/reviews/:id', async (req, res) => {
             const id = req.params.id;
